@@ -4,7 +4,7 @@
   || Session 1| Session2 |
   |:---|---:|----:|
   | Start Time | 9:46 AM||
-  | End Time| 10:30 AM||
+  | End Time| 11:05 AM||
   | Duration | 1 HR||
 
   ### Resources Discovered or Used Today:
