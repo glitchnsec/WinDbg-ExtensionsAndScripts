@@ -68,3 +68,38 @@
         - Theres's code to extend the `Debugger::DataModel::Libraries::Hello` and `Debugger::DataModel::ClientEx::Boxing`
         - Hello class methods declared in the header file `HelloProvider.h` are implemented
         - Implements the extension of the Process Debugger Model
+
+- May 25th 2020
+  ---
+  ### Time Information
+  || Session 1| Session2 |
+  |:---|---:|----:|
+  | Start Time | 12:30 AM|11:00 PM|
+  | End Time| 2:00 AM|1:00 AM|
+  | Duration | 1.5 HR| 2.0 HR|
+
+  ### Resources Discovered or Used Today:
+  - Some angel wrote a C++17 wrapper library from which I could get insights and good practice. The code is on [GitHub](https://github.com/Ybalrid/kissnet/) and a blog: [No nonsense networking for C++ : Introducing kissnet, a K.I.S.S. socket library!](https://blog.ybalrid.info/2018/12/no-nonsense-networking-for-c-introducing-kissnet-a-k-i-s-s-socket-library/)
+  - [Berkeley Sockets](https://en.wikipedia.org/wiki/Berkeley_sockets])
+  - 
+  ### Design Decisions
+  - Decided to implement the following wrapper APIs
+    - Socket
+    - Bind
+    - Accept
+    - Listen
+    - Connect
+    - GetHostByName
+    - GetHostByAddress
+    - SetSockOpt
+    - Select
+    - Poll
+    - GetSockOpt
+    - SendAll
+    - RecvAll
+
+  ### Notes
+  - Understanding the hello sample is still in progress, but I have covered both C++ files and ready to start coding!
+  - 
+
+  ### Hello World Notes

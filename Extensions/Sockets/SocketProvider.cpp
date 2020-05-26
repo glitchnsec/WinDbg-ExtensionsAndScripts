@@ -24,16 +24,6 @@ namespace Debugger::DataModel::Libraries::Socket
   //
   SocketObject::SocketObject()
   {
-    //
-    // Create a new read-only property called "World" whose value is directly bound to the C++ 'Text' field
-    // of Details::Hello.
-    //
-    BindReadOnlyProperty(L"World", &Details::Hello::Text);
-
-    //
-    // Add a property called "Test" whose value is provided by a property accessor in our class.
-    //
-    AddReadOnlyProperty(L"Test", this, &HelloObject::Get_Test);
 
     //
     // Add a custom string conversion function for any instance of Details::Hello.
@@ -72,13 +62,10 @@ namespace Debugger::DataModel::Libraries::Socket
     return stringConversion;
   }
 
-  // HelloExtension():
-  //
-  // The constructor for the singleton extension class which adds new properties to the debugger's notion
-  // of what a process is (Debugger.Models.Process).
-  //
-  HelloExtension::HelloExtension() :
-    ExtensionModel(NamedModelParent(L"Debugger.Utility.Process"))
+  // SocketExtension()
+  // Create the Extension Node
+  SocketExtension::SocketExtension() :
+    ExtensionModel(NamespacePropertyParent(L"Debugger.Models.Utility", L"Debugger.Models.Utility.Socket", "Socket"))
   {
     //
     // Add a new read-only property named "Hello" whose value is acquired through calling the Get_Hello

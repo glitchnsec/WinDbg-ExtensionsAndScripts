@@ -1,11 +1,10 @@
 #pragma once
 //**************************************************************************
 //
-// HelloProvider.h
+// SocketProvider.h
 // 
-// Definition of a provider class which adds a new example property "Hello" to
-// the debugger's notion of a process.
-//
+// Definition of a provider class which adds a "Socket" node to "Debugger.Utility.Socket"
+// Heavily influenced by https://github.com/Ybalrid/kissnet/blob/master/kissnet.hpp
 //**************************************************************************
 
 namespace Debugger::DataModel::Libraries::Socket
@@ -15,23 +14,104 @@ namespace Debugger::DataModel::Libraries::Socket
   using namespace Debugger::DataModel::ProviderEx;
 
   //*************************************************
-  // Internal Details:
-  //
-
-  namespace Details
+  // Socket Internals
+  // definitions for protocols, Ip versions etc
+  namespace Internals
   {
 
-    // Hello:
-    //
-    // A C++ object which will be returned from a new "Hello" property on every process.
-    //
-    // [JavaScript: This (combined with HelloObject) is equivalent to the __HelloObject class]
-    // [COM       : This is equivalent to the HelloData class]
-    //
-    struct Hello
+    // supported protocols
+    enum class protocol {
+      tcp,
+      udp
+    }; // enum protocol
+
+    // supported Ip versions
+    enum class ip_version {
+      v4,
+    }; // enum ip
+
+    // address of sock -> ip and port
+    struct address {
+
+      // ip addr
+      std::wstring ip_addr{};
+
+      // port
+      uint16_t port{};
+
+      // default constructor
+      address() = default;
+
+      static bool is_valid_port(unsigned long n) {
+        return n < 1 << 16;
+      }
+
+      // cosntructor for string and numeric port. Similar to python
+      address(std::wstring ip, uint16_t prt) {
+        if (is_valid_port(prt)) {
+          port = prt;
+          ip_addr = std::move(ip);
+        } else {
+          // TODO implement error handling
+        }
+      
+      }
+      // TODO: constructor for SOCKADDR
+
+    }; // struct address
+
+
+    // Taken as is from https://github.com/Ybalrid/kissnet/blob/616d360ff150f32475c15630e27bdcab95e16ffb/kissnet.hpp#L523
+    struct socket_status
     {
-      std::wstring Text;
-    };
+      ///Enumeration of socket status, with a 1 byte footprint
+      enum values : int8_t {
+        errored = 0x0,
+        valid = 0x1,
+        cleanly_disconnected = 0x2,
+        non_blocking_would_have_blocked = 0x3
+
+        /* ... any other info on a "still valid socket" goes here ... */
+
+      };
+
+      ///Actual value of the socket_status.
+      const values value;
+
+      ///Use the default constructor
+      socket_status() :
+        value{ errored } {}
+
+      ///Construct a "errored/valid" status for a true/false
+      explicit socket_status(bool state) :
+        value(values(state ? valid : errored)) {}
+
+      socket_status(values v) :
+        value(v) {}
+
+      ///Copy socket status by default
+      socket_status(const socket_status&) = default;
+
+      ///Move socket status by default
+      socket_status(socket_status&&) = default;
+
+      ///implicitly convert this object to const bool (as the status should not change)
+      operator bool() const
+      {
+        //See the above enum: every value <= 0 correspond to an error, and will return false. Every value > 0 returns true
+        return value > 0;
+      }
+
+      int8_t get_value()
+      {
+        return value;
+      }
+
+      bool operator==(values v)
+      {
+        return v == value;
+      }
+    }; // struct status
 
   }
 
@@ -39,31 +119,45 @@ namespace Debugger::DataModel::Libraries::Socket
   // Extension Classes:
   //
 
-  // HelloObject:
-  //
-  // A singleton class which makes instances of our internal "Hello" object accessible to the data model
-  //
-  // [JavaScript: This (combined with Details::Hello) is equivalent to the __HelloObject class]
-  // [COM       : This is equivalent to the data model created in HelloExtension::Initialize]
-  //
-  class SocketObject : public TypedInstanceModel<Details::Socket>
+  // SocketObject:
+  // Wrapper around the native socket implementation in windows
+  // with simplifications
+  template <Internals::protocol sock_proto, Internals::ip ipver = Internals::ip_version::v4>
+  class SocketObject
   {
   public:
 
     SocketObject();
 
-    // Get_Test():
-    //
-    // The property accessor for an added example property on top of what is in the Details::Hello class.
-    //
-    Object Get_Test(_In_ const Object& helloInstance, _In_ const Details::Hello& hello);
+    Object Socket();
+
+    Object Close();
+
+    Object Accept();
+
+    Object Listen();
+
+    Object Connect();
+
+    Object Bind();
+
+    Object GetHostByName();
+
+    Object GetHostByAddress();
+
+    Object Send();
+
+    Object Recv();
+
+    Object ErrorStatus();
+
 
     // GetStringConversion():
     //
-    // The method which will be called to generate a string conversion of "Hello"
+    // The method which will be called to generate a string conversion of a Socket
     //
-    std::wstring GetStringConversion(_In_ const Object& helloInstance,
-      _In_ Details::Hello& hello,
+    std::wstring GetStringConversion(_In_ const Object& socketInstance,
+      _In_ Details::Info& socket,
       _In_ const Metadata& metadata);
 
 
@@ -155,4 +249,7 @@ namespace Debugger::DataModel::ClientEx::Boxing
   };
 
 };
+
+
+
 
