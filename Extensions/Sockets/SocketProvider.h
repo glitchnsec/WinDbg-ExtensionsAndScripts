@@ -123,7 +123,7 @@ namespace Debugger::DataModel::Libraries::Socket
   // Wrapper around the native socket implementation in windows
   // with simplifications
   template <Internals::protocol sock_proto, Internals::ip ipver = Internals::ip_version::v4>
-  class SocketObject
+  class SocketObject : public TypedInstanceModel<Object>
   {
   public:
 
@@ -163,24 +163,13 @@ namespace Debugger::DataModel::Libraries::Socket
 
   };
 
-  // HelloExtension:
-  //
-  // A singleton class which extends the debugger's notion of a process with a new "Hello" property.
-  //
-  // [JavaScript: This is equivalent to the __HelloExtension class]
-  // [COM       : This is equivalent to the HelloExtension and HelloExtensionModel classes]
+  // SocketExtension:
   //
   class SocketExtension : public ExtensionModel
   {
   public:
 
     SocketExtension();
-
-    // Get_Hello():
-    //
-    // The property accessor for the "Hello" property which is added to a process.
-    //
-    Details::Socket Get_Hello(_In_ const Object& processInstance);
 
   };
 
@@ -238,15 +227,15 @@ namespace Debugger::DataModel::Libraries::Socket
 namespace Debugger::DataModel::ClientEx::Boxing
 {
 
-  using namespace Debugger::DataModel::Libraries::Hello;
-  using namespace Debugger::DataModel::Libraries::Hello::Details;
+  //using namespace Debugger::DataModel::Libraries::Hello;
+  //using namespace Debugger::DataModel::Libraries::Hello::Details;
 
-  template<>
-  struct BoxObject<Hello>
-  {
-    static Hello Unbox(_In_ const Object& object);
-    static Object Box(_In_ const Hello& hello);
-  };
+  //template<>
+  //struct BoxObject<SocketO>
+  //{
+  //  static Hello Unbox(_In_ const Object& object);
+  //  static Object Box(_In_ const Hello& hello);
+  //};
 
 };
 

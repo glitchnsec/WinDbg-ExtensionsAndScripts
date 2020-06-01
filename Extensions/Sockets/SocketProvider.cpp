@@ -16,7 +16,7 @@
 namespace Debugger::DataModel::Libraries::Socket
 {
 
-  SocketProvider* SocketProvider::s_pProvider = nullptr;
+  //SocketProvider* SocketProvider::s_pProvider = nullptr;
 
   // HelloObject():
   //
@@ -28,7 +28,7 @@ namespace Debugger::DataModel::Libraries::Socket
     //
     // Add a custom string conversion function for any instance of Details::Hello.
     //
-    AddStringDisplayableFunction(this, &HelloObject::GetStringConversion);
+    //AddStringDisplayableFunction(this, &HelloObject::GetStringConversion);
   }
 
   // Get_Test():
@@ -36,31 +36,31 @@ namespace Debugger::DataModel::Libraries::Socket
   // The property accessor the the "Test" property this extension adds to the projection of the
   // 'Details::Hello' object.
   //
-  Object HelloObject::Get_Test(_In_ const Object& /*helloInstance*/,                     // Boxed representation
-    _In_ const Details::Hello& /*hello*/)                     // Implementation class
-  {
-    //
-    // Create and return a new object with two keys: A with the integer value 42, and B with the string
-    // value "Hello World".
-    //
-    return Object::Create(HostContext(),
-      L"A", 42,
-      L"B", L"Hello World");
-  }
+  //Object HelloObject::Get_Test(_In_ const Object& /*helloInstance*/,                     // Boxed representation
+  //  _In_ const Details::Hello& /*hello*/)                     // Implementation class
+  //{
+  //  //
+  //  // Create and return a new object with two keys: A with the integer value 42, and B with the string
+  //  // value "Hello World".
+  //  //
+  //  return Object::Create(HostContext(),
+  //    L"A", 42,
+  //    L"B", L"Hello World");
+  //}
 
   // GetStringConversion():
   //
   // Gets the display string conversion for any instance of Details::Hello so that the debugger can display
   // the object's value on console or in UI.  
   //
-  std::wstring HelloObject::GetStringConversion(_In_ const Object& /*helloInstance*/,    // Boxed representation
-    _In_ Details::Hello& hello,              // Implementation class
-    _In_ const Metadata& /*metadata*/)       // Conversion metadata
-  {
-    std::wstring stringConversion = L"C++ Object: ";
-    stringConversion += hello.Text;
-    return stringConversion;
-  }
+  //std::wstring HelloObject::GetStringConversion(_In_ const Object& /*helloInstance*/,    // Boxed representation
+  //  _In_ Details::Hello& hello,              // Implementation class
+  //  _In_ const Metadata& /*metadata*/)       // Conversion metadata
+  //{
+  //  std::wstring stringConversion = L"C++ Object: ";
+  //  stringConversion += hello.Text;
+  //  return stringConversion;
+  //}
 
   // SocketExtension()
   // Create the Extension Node
@@ -71,7 +71,7 @@ namespace Debugger::DataModel::Libraries::Socket
     // Add a new read-only property named "Hello" whose value is acquired through calling the Get_Hello
     // accessor method.
     //
-    AddReadOnlyProperty(L"Hello", this, &HelloExtension::Get_Hello);
+    //AddReadOnlyProperty(L"Hello", this, &HelloExtension::Get_Hello);
   }
 
   // Get_Hello():
@@ -81,10 +81,10 @@ namespace Debugger::DataModel::Libraries::Socket
   // Debugger::DataModel::ClientEx::Boxing::BoxObject<Details::Hello> which knows how to box and unbox instances 
   // of Details::Hello.
   //
-  Details::Hello HelloExtension::Get_Hello(_In_ const Object& /*processInstance*/)
-  {
-    return Details::Hello{ L"Hello World" };
-  }
+  //Details::Hello HelloExtension::Get_Hello(_In_ const Object& /*processInstance*/)
+  //{
+  //  return Details::Hello{ L"Hello World" };
+  //}
 
   // HelloProvider():
   //
@@ -108,37 +108,37 @@ namespace Debugger::DataModel::Libraries::Socket
 namespace Debugger::DataModel::ClientEx::Boxing
 {
 
-  using namespace Debugger::DataModel::Libraries::Hello;
-  using namespace Debugger::DataModel::Libraries::Hello::Details;
+  //using namespace Debugger::DataModel::Libraries::Hello;
+  //using namespace Debugger::DataModel::Libraries::Hello::Details;
 
-  // BoxObject<Hello>::Unbox():
-  //
-  // Provides a custom unboxing (conversion from a generic object instance) implementation for
-  // instances of Details::Hello.
-  //
-  Hello BoxObject<Hello>::Unbox(_In_ const Object& object)
-  {
-    //
-    // Check whether the object is an instance of our Details::Hello.  If not, throw; otherwise,
-    // convert.
-    //
-    auto& factory = HelloProvider::Get().GetHelloFactory();
-    if (!factory.IsObjectInstance(object))
-    {
-      throw std::invalid_argument("Illegal object type.  Cannot convert to Hello");
-    }
+  //// BoxObject<Hello>::Unbox():
+  ////
+  //// Provides a custom unboxing (conversion from a generic object instance) implementation for
+  //// instances of Details::Hello.
+  ////
+  //Hello BoxObject<Hello>::Unbox(_In_ const Object& object)
+  //{
+  //  //
+  //  // Check whether the object is an instance of our Details::Hello.  If not, throw; otherwise,
+  //  // convert.
+  //  //
+  //  auto& factory = HelloProvider::Get().GetHelloFactory();
+  //  if (!factory.IsObjectInstance(object))
+  //  {
+  //    throw std::invalid_argument("Illegal object type.  Cannot convert to Hello");
+  //  }
 
-    return factory.GetStoredInstance(object);
-  }
+  //  return factory.GetStoredInstance(object);
+  //}
 
-  // BoxObject<Hello>::Box():
-  //
-  // Provides a custom boxing (conversion to a generic object instance) implementation for
-  // instances of Details::Hello.
-  //
-  Object BoxObject<Hello>::Box(_In_ const Hello& hello)
-  {
-    return HelloProvider::Get().GetHelloFactory().CreateInstance(hello);
-  }
+  //// BoxObject<Hello>::Box():
+  ////
+  //// Provides a custom boxing (conversion to a generic object instance) implementation for
+  //// instances of Details::Hello.
+  ////
+  //Object BoxObject<Hello>::Box(_In_ const Hello& hello)
+  //{
+  //  return HelloProvider::Get().GetHelloFactory().CreateInstance(hello);
+  //}
 
 } // Debugger::DataModel::ClientEx::Boxing

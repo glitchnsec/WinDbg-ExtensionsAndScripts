@@ -103,3 +103,24 @@
   - 
 
   ### Hello World Notes
+
+- May 31st 2020
+  ---
+  ### Time Information
+  || Session 1| Session2 |
+  |:---|---:|----:|
+  | Start Time | 2:00 AM|11:30 PM|
+  | End Time| 3:30 AM|12:30 AM|
+  | Duration | 1.5 HR| 1.0 HR|
+
+  ### Resources Discovered or Used Today:
+  ### Design Decisions
+- Decided to suspend this project until I properly study C++
+- I decided this is best as I have not coded in the language in a while and feel out of touch. If i'm going to do this project, I should do it right so others can find it useful.
+
+  ### Notes
+- I forget to mention earlier but [@wmessmer](https://twitter.com/wmessmer) answered and confirmed my thinking on [Twitter](https://twitter.com/wmessmer/status/1264258391976734720)
+- Today, I went back to SimpleIntro.js to understand the c++ version comparisons. Since I'm not too versed with C++, it seems easier to read the JS and try to understand the equivalent
+- c++ code as well as googling stuff!
+- 
+  ### Hello World Notes
