@@ -25,6 +25,8 @@
   - Unable to compile sample due to `'ExtratString':  is not a member of 'Debugger:DataModel::ClientEx::Details'`
   - Commented on [GitHub](https://github.com/microsoft/WinDbg-Samples/issues/15) and awaiting a response
 
+---
+
 - May 23rd 2020
   ---
   ### Time Information
@@ -69,6 +71,8 @@
         - Hello class methods declared in the header file `HelloProvider.h` are implemented
         - Implements the extension of the Process Debugger Model
 
+---
+
 - May 25th 2020
   ---
   ### Time Information
@@ -104,6 +108,8 @@
 
   ### Hello World Notes
 
+---
+
 - May 31st 2020
   ---
   ### Time Information
@@ -115,12 +121,34 @@
 
   ### Resources Discovered or Used Today:
   ### Design Decisions
-- Decided to suspend this project until I properly study C++
-- I decided this is best as I have not coded in the language in a while and feel out of touch. If i'm going to do this project, I should do it right so others can find it useful.
+  - Decided to suspend this project until I properly study C++
+  - I decided this is best as I have not coded in the language in a while and feel out of touch. If i'm going to do this project, I should do it right so others can find it useful.
 
   ### Notes
-- I forget to mention earlier but [@wmessmer](https://twitter.com/wmessmer) answered and confirmed my thinking on [Twitter](https://twitter.com/wmessmer/status/1264258391976734720)
-- Today, I went back to SimpleIntro.js to understand the c++ version comparisons. Since I'm not too versed with C++, it seems easier to read the JS and try to understand the equivalent
-- c++ code as well as googling stuff!
-- 
+  - I forget to mention earlier but [@wmessmer](https://twitter.com/wmessmer) answered and confirmed my thinking on [Twitter](https://twitter.com/wmessmer/status/1264258391976734720)
+  - Today, I went back to SimpleIntro.js to understand the c++ version comparisons. Since I'm not too versed with C++, it seems easier to read the JS and try to understand the equivalent
+  - c++ code as well as googling stuff!
+  - 
+  ### Hello World Notes
+
+---
+
+- July 4th 2020
+  ---
+  ### Time Information
+  || Session 1| Session2 |
+  |:---|---:|----:|
+  | Start Time | 6:30 PM| |
+  | End Time| 8:00 PM| |
+  | Duration | 1.5 HR| |
+
+  ### Resources Discovered or Used Today:
+  - [CPP Reference](https://en.cppreference.com/w/)
+  - [Professional C++](https://www.wiley.com/en-ca/Professional+C++,+4th+Edition-p-9781119421306) by Marc Gregoire
+  ### Design Decisions
+
+  ### Notes
+  - I just returned from my 1 month hiatus, where I studied [this](https://www.udemy.com/course/beginning-c-plus-plus-programming/learn/) C++ course on Udemy and got a companion book [Professional C++ by Marc Gregoire](https://www.wiley.com/en-ca/Professional+C++,+4th+Edition-p-9781119421306)
+  - The goal today is to be able to compile what I already got
+
   ### Hello World Notes

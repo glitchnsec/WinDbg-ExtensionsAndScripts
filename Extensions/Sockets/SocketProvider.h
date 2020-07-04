@@ -28,44 +28,61 @@ namespace Debugger::DataModel::Libraries::Socket
     // supported Ip versions
     enum class ip_version {
       v4,
+      v6
     }; // enum ip
 
     // address of sock -> ip and port
-    struct address {
+    class address {
 
-      // ip addr
-      std::wstring ip_addr{};
+      private:
 
-      // port
-      uint16_t port{};
+        // ip addr; can contain a v6 or v4 string
+        std::wstring ip_addr{};
 
-      // default constructor
-      address() = default;
+        // port
+        uint16_t port{0};
 
-      static bool is_valid_port(unsigned long n) {
-        return n < 1 << 16;
-      }
+        // address.status is True if a valid address was created
+        // or False otherwise
+        bool status{};
 
-      // cosntructor for string and numeric port. Similar to python
-      address(std::wstring ip, uint16_t prt) {
-        if (is_valid_port(prt)) {
-          port = prt;
-          ip_addr = std::move(ip);
-        } else {
-          // TODO implement error handling
+      public:
+
+        // default constructor
+        address() = default;
+        ~address() = default;
+
+        static bool is_valid_port(unsigned long n) {
+          return n < 1 << 16;
         }
-      
-      }
-      // TODO: constructor for SOCKADDR
 
-    }; // struct address
+        static bool is_valid_ip(const std::wstring& ip) {
+          // check if it's a either IPv4 or IPv6
+          return false;
+        }
+
+        // constructor for string and numeric port. Similar to python
+        address(std::wstring ip, uint16_t port) :status{ false } {
+          if (is_valid_port(port)) {
+            this->port = port;
+            status |= true;
+          }
+          if (is_valid_ip(ip)){
+            ip_addr = std::move(ip);
+            status &= true;
+          }      
+        }
+
+        // TODO move and copy an address
+        // TODO getters
+    }; // class address
 
 
-    // Taken as is from https://github.com/Ybalrid/kissnet/blob/616d360ff150f32475c15630e27bdcab95e16ffb/kissnet.hpp#L523
+    // Taken modified from https://github.com/Ybalrid/kissnet/blob/616d360ff150f32475c15630e27bdcab95e16ffb/kissnet.hpp#L523
     struct socket_status
     {
       ///Enumeration of socket status, with a 1 byte footprint
-      enum values : int8_t {
+      enum sstate : int8_t {
         errored = 0x0,
         valid = 0x1,
         cleanly_disconnected = 0x2,
@@ -76,18 +93,18 @@ namespace Debugger::DataModel::Libraries::Socket
       };
 
       ///Actual value of the socket_status.
-      const values value;
+      const sstate state;
 
       ///Use the default constructor
       socket_status() :
-        value{ errored } {}
+        state{ errored } {}
 
       ///Construct a "errored/valid" status for a true/false
-      explicit socket_status(bool state) :
-        value(values(state ? valid : errored)) {}
+      explicit socket_status(bool status) :
+        state(sstate(status ? valid : errored)) {}
 
-      socket_status(values v) :
-        value(v) {}
+      socket_status(sstate status) :
+        state(status) {}
 
       ///Copy socket status by default
       socket_status(const socket_status&) = default;
@@ -99,19 +116,19 @@ namespace Debugger::DataModel::Libraries::Socket
       operator bool() const
       {
         //See the above enum: every value <= 0 correspond to an error, and will return false. Every value > 0 returns true
-        return value > 0;
+        return state > 0;
       }
 
       int8_t get_value()
       {
-        return value;
+        return state;
       }
 
-      bool operator==(values v)
+      bool operator==(sstate v)
       {
-        return v == value;
+        return v == state;
       }
-    }; // struct status
+    }; // struct socket_status
 
   }
 
@@ -122,7 +139,7 @@ namespace Debugger::DataModel::Libraries::Socket
   // SocketObject:
   // Wrapper around the native socket implementation in windows
   // with simplifications
-  template <Internals::protocol sock_proto, Internals::ip ipver = Internals::ip_version::v4>
+  template <Internals::protocol sock_proto, Internals::ip_version ipver = Internals::ip_version::v4>
   class SocketObject : public TypedInstanceModel<Object>
   {
   public:
