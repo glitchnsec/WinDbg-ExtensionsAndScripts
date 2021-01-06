@@ -152,3 +152,25 @@
   - The goal today is to be able to compile what I already got
 
   ### Hello World Notes
+
+
+---
+
+- January 5th 2021
+  ---
+  ### Time Information
+  || Session 1| Session2 |
+  |:---|---:|----:|
+  | Start Time | 10:00 PM| |
+  | End Time| 2:00 PM| |
+  | Duration | 4.0 HR| |
+
+  ### Resources Discovered or Used Today:
+  ### Design Decisions
+
+  ### Notes
+  - Abandanoned the project last year deue to other pressing constraints
+  - Was able to build a stripped down version of the Project, in other to understand what affects build
+  - Next up is to follow up the walk-through on the github project page
+
+  ### Hello World Notes

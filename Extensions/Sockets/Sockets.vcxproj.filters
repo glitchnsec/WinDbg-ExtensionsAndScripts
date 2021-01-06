@@ -18,24 +18,15 @@
     <ClInclude Include="DbgExt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SocketExtension.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SocketProvider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DbgExt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SocketProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="DbgExt.def">
+    <None Include="SocketProvider.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
