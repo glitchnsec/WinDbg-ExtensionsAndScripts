@@ -1,144 +1,148 @@
-//**************************************************************************
-//
-// SocketProvider.cpp
-// 
-// A debugger extension which adds a new namespace "Socket" to the debugger's
-// Utility.
-// 
-// The Socket namespace provides the properties and methods for manipulating
-// sockets. This can be used from JavaScript for the creating, reading and
-// writinf sockets that are needed to support a debugger extension
-//
-//**************************************************************************
-
 #include "DbgExt.h"
+#include <DbgEng.h>
 
-namespace Debugger::DataModel::Libraries::Socket
+using namespace Debugger::DataModel::ClientEx;
+using namespace Debugger::DataModel::ProviderEx;
+
+//TODO: Must declare public pointer to provider class
+//______ *g_pProvider = nullptr;
+IDataModelManager *g_pManager = nullptr;
+IDebugHost *g_pHost = nullptr;
+
+namespace Debugger::DataModel::ClientEx
 {
+	IDataModelManager *GetManager() { return g_pManager; }
+	IDebugHost *GetHost() { return g_pHost; }
+}
 
-  //SocketProvider* SocketProvider::s_pProvider = nullptr;
+//**************************************************************************
+// Standard DbgEng Extension Exports:
+//
 
-  // HelloObject():
-  //
-  // Constructor for the singleton instance of the class which binds Details::Hello to the data model.
-  //
-  SocketObject::SocketObject()
-  {
-
-    //
-    // Add a custom string conversion function for any instance of Details::Hello.
-    //
-    //AddStringDisplayableFunction(this, &HelloObject::GetStringConversion);
-  }
-
-  // Get_Test():
-  //
-  // The property accessor the the "Test" property this extension adds to the projection of the
-  // 'Details::Hello' object.
-  //
-  //Object HelloObject::Get_Test(_In_ const Object& /*helloInstance*/,                     // Boxed representation
-  //  _In_ const Details::Hello& /*hello*/)                     // Implementation class
-  //{
-  //  //
-  //  // Create and return a new object with two keys: A with the integer value 42, and B with the string
-  //  // value "Hello World".
-  //  //
-  //  return Object::Create(HostContext(),
-  //    L"A", 42,
-  //    L"B", L"Hello World");
-  //}
-
-  // GetStringConversion():
-  //
-  // Gets the display string conversion for any instance of Details::Hello so that the debugger can display
-  // the object's value on console or in UI.  
-  //
-  //std::wstring HelloObject::GetStringConversion(_In_ const Object& /*helloInstance*/,    // Boxed representation
-  //  _In_ Details::Hello& hello,              // Implementation class
-  //  _In_ const Metadata& /*metadata*/)       // Conversion metadata
-  //{
-  //  std::wstring stringConversion = L"C++ Object: ";
-  //  stringConversion += hello.Text;
-  //  return stringConversion;
-  //}
-
-  // SocketExtension()
-  // Create the Extension Node
-  SocketExtension::SocketExtension() :
-    ExtensionModel(NamespacePropertyParent(L"Debugger.Models.Utility", L"Debugger.Models.Utility.Socket", "Socket"))
-  {
-    //
-    // Add a new read-only property named "Hello" whose value is acquired through calling the Get_Hello
-    // accessor method.
-    //
-    //AddReadOnlyProperty(L"Hello", this, &HelloExtension::Get_Hello);
-  }
-
-  // Get_Hello():
-  //
-  // The property accessor for the "Hello" property this extension adds to processes.  This can simply return
-  // a Details::Hello directly because we define a specialization of 
-  // Debugger::DataModel::ClientEx::Boxing::BoxObject<Details::Hello> which knows how to box and unbox instances 
-  // of Details::Hello.
-  //
-  //Details::Hello HelloExtension::Get_Hello(_In_ const Object& /*processInstance*/)
-  //{
-  //  return Details::Hello{ L"Hello World" };
-  //}
-
-  // HelloProvider():
-  //
-  // The constructor for the hello provider which instantiates the necessary classes to extend the debugger
-  // through the data model.
-  //
-  HelloProvider::HelloProvider()
-  {
-    m_spHelloFactory = std::make_unique<HelloObject>();
-    m_spHelloExtension = std::make_unique<HelloExtension>();
-    s_pProvider = this;
-  }
-
-  HelloProvider::~HelloProvider()
-  {
-    s_pProvider = nullptr;
-  }
-
-} // Debugger::DataModel::Libraries::Hello
-
-namespace Debugger::DataModel::ClientEx::Boxing
+// DebugExtensionInitialize:
+//
+// Called to initialize the debugger extension.  For a data model extension, this acquires
+// the necessary data model interfaces from the debugger and instantiates singleton instances
+// of any of the extension classes which provide the functionality of the debugger extension.
+//
+extern "C"
+HRESULT CALLBACK DebugExtensionInitialize(PULONG /*pVersion*/, PULONG /*pFlags*/)
 {
+	HRESULT hr = S_OK;
 
-  //using namespace Debugger::DataModel::Libraries::Hello;
-  //using namespace Debugger::DataModel::Libraries::Hello::Details;
+	try
+	{
+		Microsoft::WRL::ComPtr<IDebugClient> spClient;
+		Microsoft::WRL::ComPtr<IHostDataModelAccess> spAccess;
 
-  //// BoxObject<Hello>::Unbox():
-  ////
-  //// Provides a custom unboxing (conversion from a generic object instance) implementation for
-  //// instances of Details::Hello.
-  ////
-  //Hello BoxObject<Hello>::Unbox(_In_ const Object& object)
-  //{
-  //  //
-  //  // Check whether the object is an instance of our Details::Hello.  If not, throw; otherwise,
-  //  // convert.
-  //  //
-  //  auto& factory = HelloProvider::Get().GetHelloFactory();
-  //  if (!factory.IsObjectInstance(object))
-  //  {
-  //    throw std::invalid_argument("Illegal object type.  Cannot convert to Hello");
-  //  }
+		// TODO: 1
+		// Create a client interface to the debugger and ask for the data model interfaces.  The client
+		// library requires an implementation of Debugger::DataModel::ClientEx::(GetManager and ::GetHost)
+		// which return these interfaces when called.
+		//
+		hr = DebugCreate(__uuidof(IDebugClient), (void **)&spClient);
+		if (SUCCEEDED(hr))
+		{
+			hr = spClient.As(&spAccess);
+		}
 
-  //  return factory.GetStoredInstance(object);
-  //}
+		if (SUCCEEDED(hr))
+		{
+			hr = spAccess->GetDataModel(&g_pManager, &g_pHost);
+		}
 
-  //// BoxObject<Hello>::Box():
-  ////
-  //// Provides a custom boxing (conversion to a generic object instance) implementation for
-  //// instances of Details::Hello.
-  ////
-  //Object BoxObject<Hello>::Box(_In_ const Hello& hello)
-  //{
-  //  return HelloProvider::Get().GetHelloFactory().CreateInstance(hello);
-  //}
+		if (SUCCEEDED(hr))
+		{
+			// TODO
+			// Create the provider class which itself is a singleton and holds singleton instances of
+			// all extension classes.
+			//
+			//g_pProvider = ;
+		}
+	}
+	catch (...)
+	{
+		return E_FAIL;
+	}
 
-} // Debugger::DataModel::ClientEx::Boxing
+	if (FAILED(hr))
+	{
+		if (g_pManager != nullptr)
+		{
+			g_pManager->Release();
+			g_pManager = nullptr;
+		}
+
+		if (g_pHost != nullptr)
+		{
+			g_pHost->Release();
+			g_pHost = nullptr;
+		}
+	}
+
+	return hr;
+}
+
+// DebugExtensionCanUnload:
+//
+// Called after DebugExtensionUninitialize to determine whether the debugger extension can
+// be unloaded.  A return of S_OK indicates that it can.  A failure (or return of S_FALSE) indicates
+// that it cannot.
+//
+// Extension libraries are responsible for ensuring that there are no live interfaces back into the
+// extension before unloading!
+//
+extern "C"
+HRESULT CALLBACK DebugExtensionCanUnload(void)
+{
+	auto objCount = Microsoft::WRL::Module<InProc>::GetModule().GetObjectCount();
+	return (objCount == 0) ? S_OK : S_FALSE;
+}
+
+// DebugExtensionUninitialize:
+//
+// Called before unloading (and before DebugExtensionCanUnload) to prepare the debugger extension for
+// unloading.  Any manipulations done during DebugExtensionInitialize should be undone and any interfaces
+// released.
+//
+// Deleting the singleton instances of extension classes should unlink them from the data model.  There still
+// may be references into the extension alive from scripts, other debugger extensions, debugger variables,
+// etc...  The extension cannot return S_OK from DebugExtensionCanUnload until there are no such live
+// references.
+//
+// If DebugExtensionCanUnload returns a "do not unload" indication, it is possible that DebugExtensionInitialize
+// will be called without an interveining unload.
+//
+extern "C"
+void CALLBACK DebugExtensionUninitialize()
+{
+	// TODO: unitialize the g_pProvider
+	/*if (g_pProvider != nullptr)
+	{
+		delete g_pProvider;
+		g_pProvider = nullptr;
+	}*/
+
+	if (g_pManager != nullptr)
+	{
+		g_pManager->Release();
+		g_pManager = nullptr;
+	}
+
+	if (g_pHost != nullptr)
+	{
+		g_pHost->Release();
+		g_pHost = nullptr;
+	}
+}
+
+// DebugExtensionUnload:
+//
+// A final callback immediately before the DLL is unloaded.  This will only happen after a successful
+// DebugExtensionCanUnload.
+//
+extern "C"
+void CALLBACK DebugExtensionUnload()
+{
+}
+
