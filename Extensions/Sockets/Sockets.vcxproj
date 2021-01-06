@@ -155,16 +155,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SocketProvider.cpp" />
+    <ClCompile Include="SocketsExtension.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SocketProvider.def" />
+    <None Include="SocketsExtension.def" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DbgExt.h" />
+    <ClInclude Include="SocketsExtension.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
