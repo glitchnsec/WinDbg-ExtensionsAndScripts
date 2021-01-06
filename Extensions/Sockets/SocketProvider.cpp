@@ -35,7 +35,6 @@ HRESULT CALLBACK DebugExtensionInitialize(PULONG /*pVersion*/, PULONG /*pFlags*/
 		Microsoft::WRL::ComPtr<IDebugClient> spClient;
 		Microsoft::WRL::ComPtr<IHostDataModelAccess> spAccess;
 
-		// TODO: 1
 		// Create a client interface to the debugger and ask for the data model interfaces.  The client
 		// library requires an implementation of Debugger::DataModel::ClientEx::(GetManager and ::GetHost)
 		// which return these interfaces when called.

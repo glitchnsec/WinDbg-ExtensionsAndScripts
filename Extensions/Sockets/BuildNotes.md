@@ -15,4 +15,5 @@ Begining a Project
    ```
 4. Add the template code for DbgEng Extension Exports
 
-   See commit with message: Starter files
+   See commit with message: Starter code for SocketProvider.cpp SocketPro
+vider.def and DbgExt and BuildNotes
