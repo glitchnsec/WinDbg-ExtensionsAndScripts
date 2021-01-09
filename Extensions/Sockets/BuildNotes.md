@@ -16,3 +16,7 @@ Begining a Project
 4. Add the template code for DbgEng Extension Exports
 
    See commit with message: Starter code for SocketsExtension.cpp SocketsExtension.def and SocketsExtension.h and BuildNotes.md
+
+5. Implement the Provider.
+	The provider.h file should contains delarations for classes and properties in their namespaces.
+	Add the provider.h file to the includes in the main .h file

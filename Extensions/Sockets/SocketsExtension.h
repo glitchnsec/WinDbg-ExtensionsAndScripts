@@ -1,28 +1,27 @@
-#pragma once
-//**************************************************************************
-// 
-// DbgExt.h
-//
-// Main Internal Header 
-//
-//**************************************************************************
+namespace Debugger::DataModel::Libraries
+{
 
-#include <windows.h>
-#include <wrl.h>
+	using namespace Debugger::DataModel::ClientEx;
+	using namespace Debugger::DataModel::ProviderEx;
 
-/*
-#include <windows.h>
-#include <oaidl.h>
-#include <wrl.h>
-#include <wrl/client.h>
-#include <wrl/implements.h>
-#include <wrl/module.h>
-*/
-// This is needed when using SDK version 10.0.17763.0
-// For newer versions of the SDK, this is not necessary
-using namespace Microsoft::WRL;
+	class ExtensionProvider
+	{
+	public:
 
-#include <dbgmodel.h>
-#include "DbgModelClientEx.h"
+		// ExtensionProvider():
+		//
+		// Construct the provider for this extension and instantiate any individual extension classes which
+		// together form the functionality of this debugger extension.
+		//
 
+		// For this feature we need to be able to 
+		// Create 
+		ExtensionProvider();
+		Sockets::SocketsProvider& GetSocketsProvider() const { return *m_spSocketsProvider.get(); }
 
+	private:
+		std::unique_ptr<Sockets::SocketsProvider> m_spSocketsProvider;
+
+	};
+
+} // Debugger::DataModel::Libraries
