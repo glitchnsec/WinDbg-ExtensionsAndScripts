@@ -1,11 +1,11 @@
-#include "SocketsExtension.h"
+#include "Sockets.h"
 #include <DbgEng.h>
 
 using namespace Debugger::DataModel::ClientEx;
 using namespace Debugger::DataModel::ProviderEx;
 
 //TODO: Must declare public pointer to provider class
-//______ *g_pProvider = nullptr;
+Debugger::DataModel::Libraries::ExtensionProvider *g_pProvider = nullptr;
 IDataModelManager *g_pManager = nullptr;
 IDebugHost *g_pHost = nullptr;
 
@@ -13,6 +13,16 @@ namespace Debugger::DataModel::ClientEx
 {
 	IDataModelManager *GetManager() { return g_pManager; }
 	IDebugHost *GetHost() { return g_pHost; }
+}
+
+namespace Debugger::DataModel::Libraries
+{
+
+	ExtensionProvider::ExtensionProvider()
+	{
+		m_spSocketsProvider = std::make_unique<Sockets::SocketsProvider>();
+	}
+
 }
 
 //**************************************************************************
@@ -56,7 +66,7 @@ HRESULT CALLBACK DebugExtensionInitialize(PULONG /*pVersion*/, PULONG /*pFlags*/
 			// Create the provider class which itself is a singleton and holds singleton instances of
 			// all extension classes.
 			//
-			//g_pProvider = ;
+			g_pProvider = new Debugger::DataModel::Libraries::ExtensionProvider();
 		}
 	}
 	catch (...)
@@ -116,11 +126,11 @@ extern "C"
 void CALLBACK DebugExtensionUninitialize()
 {
 	// TODO: unitialize the g_pProvider
-	/*if (g_pProvider != nullptr)
+	if (g_pProvider != nullptr)
 	{
 		delete g_pProvider;
 		g_pProvider = nullptr;
-	}*/
+	}
 
 	if (g_pManager != nullptr)
 	{

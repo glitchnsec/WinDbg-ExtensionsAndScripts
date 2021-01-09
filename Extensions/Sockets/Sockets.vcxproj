@@ -156,24 +156,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="SocketsExtension.cpp" />
+    <ClCompile Include="SocketsProvider.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="SocketsExtension.def" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sockets.h" />
     <ClInclude Include="SocketsExtension.h" />
+    <ClInclude Include="SocketsProvider.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="packages\Microsoft.Debugging.DataModel.CppLib.1.0.0\build\native\Microsoft.Debugging.DataModel.CppLib.targets" Condition="Exists('packages\Microsoft.Debugging.DataModel.CppLib.1.0.0\build\native\Microsoft.Debugging.DataModel.CppLib.targets')" />
+    <Import Project="packages\Microsoft.Debugging.DataModel.CppLib.1.0.1\build\native\Microsoft.Debugging.DataModel.CppLib.targets" Condition="Exists('packages\Microsoft.Debugging.DataModel.CppLib.1.0.1\build\native\Microsoft.Debugging.DataModel.CppLib.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\Microsoft.Debugging.DataModel.CppLib.1.0.0\build\native\Microsoft.Debugging.DataModel.CppLib.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Debugging.DataModel.CppLib.1.0.0\build\native\Microsoft.Debugging.DataModel.CppLib.targets'))" />
+    <Error Condition="!Exists('packages\Microsoft.Debugging.DataModel.CppLib.1.0.1\build\native\Microsoft.Debugging.DataModel.CppLib.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Debugging.DataModel.CppLib.1.0.1\build\native\Microsoft.Debugging.DataModel.CppLib.targets'))" />
   </Target>
 </Project>
