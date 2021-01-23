@@ -2,36 +2,37 @@
 
 namespace Debugger::DataModel::Libraries::Sockets {
 
-	SocketProvider *SocketProvider::s_pProvider = nullptr;
+	SocketsProvider *SocketsProvider::s_pProvider = nullptr;
 
 
 	/**
 		Add all the exposed Methods
 	*/
 	SocketObject::SocketObject() {
-		AddMethod(L"SocketSend", this, &SocketObject::SocketSend);
+		//AddMethod(L"SocketSend", this, &SocketObject::SocketSend);
 
-		AddMethod(L"SocketReceive", this, &SocketObject::SocketReceive);
+		//AddMethod(L"SocketReceive", this, &SocketObject::SocketReceive);
 
-		AddMethod(L"SocketReceiveAll", this, &SocketObject::SocketReceiveAll);
+		//AddMethod(L"SocketReceiveAll", this, &SocketObject::SocketReceiveAll);
 
-		AddMethod(L"SocketClose", this, &SocketObject::SocketClose);
+		//AddMethod(L"SocketClose", this, &SocketObject::SocketClose);
+
+		AddStringDisplayableFunction(this, &SocketObject::GetStringConversion);
 
 	}
 
-	ClientSocketObject::ClientSocketObject() {
-		TypedInstanceModel<Details::ClientSocket>::AddMethod(L"SocketConnect", this, &ClientSocketObject::SocketConnect);
-	}
 
 	SocketUtility::SocketUtility() {
 
-		BindReadOnlyProperty(L"Sockets", &Details::Utility::Sockets);
+		//BindReadOnlyProperty(L"Sockets", &Details::Utility::Sockets);
 
-		AddMethod(L"SocketInit", this, SocketUtility::SocketInit);
+		//AddMethod(L"SocketInit", this, &SocketUtility::SocketInit);
 
-		AddMethod(L"ServerEndpoint", this, SocketUtility::ServerEndpoint);
+		//AddMethod(L"ServerEndpoint", this, &SocketUtility::ServerEndpoint);
 
-		AddMethod(L"ClientEndpoint", this, SocketUtility::ClientEndpoint);
+		//AddMethod(L"ClientEndpoint", this, &SocketUtility::ClientEndpoint);
+
+		AddStringDisplayableFunction(this, &SocketUtility::GetStringConversion);
 	}
 
 	// 
@@ -120,7 +121,10 @@ namespace Debugger::DataModel::Libraries::Sockets {
 		hints.ai_protocol = proto;
 		hints.ai_flags = AI_PASSIVE;
 
-		Details::ServerSocket *socketObject = (Details::ServerSocket *)SocketInitHelper(objectInstance, utilityObject, family, type, proto);
+		Details::Socket *socketObject = SocketInitHelper(objectInstance, utilityObject, family, type, proto);
+
+		// this is a server endpoint
+		socketObject->endpoint_type = 1;
 
 		// Error check the returned object
 		if (socketObject->err_code != 0) {
@@ -206,7 +210,10 @@ namespace Debugger::DataModel::Libraries::Sockets {
 		hints.ai_protocol = proto;
 		hints.ai_flags = AI_PASSIVE;
 		
-		Details::ServerSocket *socketObject = (Details::ServerSocket *)SocketInitHelper(objectInstance, utilityObject, family, type, proto);
+		Details::Socket *socketObject = SocketInitHelper(objectInstance, utilityObject, family, type, proto);
+
+		// this is a server endpoint
+		socketObject->endpoint_type = 0;
 
 		// Error check the returned object
 		if (socketObject->err_code != 0) {
@@ -273,50 +280,42 @@ namespace Debugger::DataModel::Libraries::Sockets {
 	
 	}
 
-	std::wstring ClientSocketObject::GetStringConversion(_In_ const Object& objectInstance,
-		_In_ Details::ClientSocket& csock,
+	std::wstring SocketObject::GetStringConversion(_In_ const Object& objectInstance,
+		_In_ Details::Socket& sock,
 		_In_ const Metadata& metadata) {
 
-		std::wstring stringConversion = L"ClientSocket: Socket is ";
+		std::wstring stringConversion = L"";
 
-		if (csock.isInitialized) {
-			stringConversion += L"Connected to : (";
-			stringConversion += csock.hostname;
-			stringConversion += L",";
-			stringConversion += std::to_wstring(csock.port);
-			stringConversion += L")\n";
-		}
-		else {
-			stringConversion += L"Not Connected. Error msg is: ";
-			stringConversion += csock.err_msg;
-			stringConversion += L"\n";
-		}
+		if (sock.isInitialized) {
+			if (sock.endpoint_type == 1) {
+				// client
+				stringConversion = L"ClientSocket: Socket is ";
+				stringConversion += L"Connected to : (";
+				stringConversion += sock.hostname;
+				stringConversion += L",";
+				stringConversion += std::to_wstring(sock.port);
+				stringConversion += L")\n";
 
-		
-		return stringConversion;
-
-	}
-
-	std::wstring ServerSocketObject::GetStringConversion(_In_ const Object& objectInstance,
-		_In_ Details::ServerSocket& ssock,
-		_In_ const Metadata& metadata) {
-
-		std::wstring stringConversion = L"ServerSocket: Socket is ";
-
-		if (ssock.isInitialized) {
-			stringConversion += L"Listening at : (";
-			stringConversion += ssock.hostname;
-			stringConversion += L",";
-			stringConversion += std::to_wstring(ssock.port);
-			stringConversion += L")\n";
+			}
+			else if (sock.endpoint_type == 0) {
+				// server
+				stringConversion = L"ServerSocket: Socket is ";
+				stringConversion += L"Listening at : (";
+				stringConversion += sock.hostname;
+				stringConversion += L",";
+				stringConversion += std::to_wstring(sock.port);
+				stringConversion += L")\n";
+			}
+			else {
+				// haven't seen this before 
+			}
 		}
 		else {
 			stringConversion += L"Not Listening. Error msg is: ";
-			stringConversion += ssock.err_msg;
+			stringConversion += sock.err_msg;
 			stringConversion += L"\n";
 		}
-
-
+		
 		return stringConversion;
 
 	}
@@ -331,12 +330,75 @@ namespace Debugger::DataModel::Libraries::Sockets {
 		return Details::Utility{};
 	}
 
-	SocketProvider::SocketProvider() {
+	SocketsProvider::SocketsProvider() {
 		m_spSocketObjectFactory = std::make_unique<SocketObject>();
-		m_spServerSocketObjectFactory = std::make_unique<ServerSocketObject>();
-		m_spClientSocketObjectFactory = std::make_unique<ClientSocketObject>();
 		m_spSocketExtension = std::make_unique<SocketExtension>();
 		s_pProvider = this;
 	}
 
+	SocketsProvider::~SocketsProvider() {
+		s_pProvider = nullptr;
+	}
+
 }
+
+namespace Debugger::DataModel::ClientEx::Boxing
+{
+
+	using namespace Debugger::DataModel::Libraries::Sockets;
+	using namespace Debugger::DataModel::Libraries::Sockets::Details;
+
+	SocketUtility *g_pSocketUtility = new SocketUtility;
+
+
+	Socket BoxObject<Socket>::Unbox(_In_ const Object& object)
+	{
+		//
+		// Check whether the object is an instance of our Details::Hello.  If not, throw; otherwise,
+		// convert.
+		//
+		auto& factory = SocketsProvider::Get().GetSocketObjectFactory();
+		if (!factory.IsObjectInstance(object))
+		{
+			throw std::invalid_argument("Illegal object type.  Cannot convert to Socket");
+		}
+
+		return factory.GetStoredInstance(object);
+	}
+
+	// BoxObject<Hello>::Box():
+	//
+	// Provides a custom boxing (conversion to a generic object instance) implementation for
+	// instances of Details::Hello.
+	//
+	Object BoxObject<Socket>::Box(_In_ const Socket& sock)
+	{
+		return SocketsProvider::Get().GetSocketObjectFactory().CreateInstance(sock);
+	}
+
+	
+	Utility BoxObject<Utility>::Unbox(_In_ const Object& object)
+	{
+		//
+		// convert.
+		//
+		if (g_pSocketUtility == nullptr || !g_pSocketUtility->IsObjectInstance(object))
+		{
+			throw std::invalid_argument("Illegal object type.  Cannot convert to Utility");
+		}
+
+		return g_pSocketUtility->GetStoredInstance(object);
+	}
+
+
+	
+	Object BoxObject<Utility>::Box(_In_ const Utility& util)
+	{
+		if (g_pSocketUtility == nullptr) {
+			throw std::invalid_argument("Factory is NULL");
+		}
+		return g_pSocketUtility->CreateInstance(util);
+	}
+
+
+} // Debugger::DataModel::ClientEx::Boxing

@@ -17,17 +17,14 @@ namespace Details {
 		int port;
 		struct addrinfo *lresult;
 		struct addrinfo *rresult;
+		int endpoint_type = -1; // 0 | 1 for client and server respectively
 	};
-
-	struct ClientSocket : public Socket { };
-
-	struct ServerSocket : public Socket { };
 
 	struct Utility {
 
 		// only keep a reference to what was created,
 		// indexs cannot be reassigned
-		std::vector<Socket &> Sockets;
+		std::vector<Socket> Sockets {};
 
 		// Add CONSTANT defines here
 
@@ -90,29 +87,23 @@ public:
 
 };
 
-class ServerSocketObject : public TypedInstanceModel<Details::ServerSocket> {
-public:
-
-	ServerSocketObject();
-
-	// Bind
-	Object ServerSocketBind(_In_ const Object& ObjectInstance, _In_ const Details::ServerSocket& ssocket);
-
-	// Listen
-	Object ServerSocketListen(_In_ const Object& ObjectInstance, _In_ const Details::ServerSocket& ssocket);
-
-	// Accept
-	Object ServerSocketAccept(_In_ const Object& ObjectInstance, _In_ const Details::ServerSocket& ssocket);
-
-	std::wstring GetStringConversion(_In_ const Object& objectInstance,
-		_In_ Details::ServerSocket& ssocket,
-		_In_ const Metadata& metadata);
-};
-
 class SocketObject : public TypedInstanceModel<Details::Socket> {
 public:
 
 	SocketObject();
+
+	// Bind
+	Object SocketBind(_In_ const Object& ObjectInstance, _In_ const Details::Socket& ssocket);
+
+	// Listen
+	Object SocketListen(_In_ const Object& ObjectInstance, _In_ const Details::Socket& ssocket);
+
+	// Accept
+	Object SocketAccept(_In_ const Object& ObjectInstance, _In_ const Details::Socket& ssocket);
+
+	std::wstring GetStringConversion(_In_ const Object& objectInstance,
+		_In_ Details::Socket& ssocket,
+		_In_ const Metadata& metadata);
 
 	// Send
 	Object SocketSend(_In_ const Object& socketObjectInstance, _In_ const Details::Socket& socket);
@@ -126,25 +117,11 @@ public:
 	// close
 	Object SocketClose(_In_ const Object& socketObjectInstance, _In_ const Details::Socket& socket);
 
-	std::wstring GetStringConversion(_In_ const Object& socketObjectInstance,
-		_In_ Details::Socket& socket,
-		_In_ const Metadata& metadata);
-};
-
-
-class ClientSocketObject : public SocketObject, public TypedInstanceModel<Details::ClientSocket> {
-public:
-
-	ClientSocketObject();
-
 	// Connect
 	Object SocketConnect(
 		_In_ const Object& ObjectInstance,
-		_In_ const Details::ClientSocket& csocket);
+		_In_ const Details::Socket& csocket);
 
-	std::wstring GetStringConversion(_In_ const Object& socketObjectInstance,
-		_In_ Details::ClientSocket& utility,
-		_In_ const Metadata& metadata);
 };
 
 
@@ -164,14 +141,6 @@ public:
 		return *m_spSocketObjectFactory.get();
 	}
 
-	ServerSocketObject& GetServerSocketObjectFactory() const {
-		return *m_spServerSocketObjectFactory.get();
-	}
-
-	ClientSocketObject& GetClientSocketObjectFactory() const {
-		return *m_spClientSocketObjectFactory.get();
-	}
-
 	static SocketsProvider& Get() {
 		return *s_pProvider;
 	}
@@ -181,10 +150,6 @@ private:
 	static SocketsProvider *s_pProvider;
 
 	std::unique_ptr<SocketObject> m_spSocketObjectFactory;
-
-	std::unique_ptr<ServerSocketObject> m_spServerSocketObjectFactory;
-
-	std::unique_ptr<ClientSocketObject> m_spClientSocketObjectFactory;
 
 	std::unique_ptr<SocketExtension> m_spSocketExtension;
 };
@@ -196,12 +161,29 @@ namespace Debugger::DataModel::ClientEx::Boxing
 {
 
 	using namespace Debugger::DataModel::Libraries::Sockets;
+	using namespace Debugger::DataModel::Libraries::Sockets::Details;
+
+	/*
+	template<>
+	struct BoxObject<Socket>
+	{
+		static Socket Unbox(_In_ const Object& object);
+		static Object Box(_In_ const Socket& sock);
+	};*/
 
 	template<>
-	struct BoxObject<SOCKET>
+	struct BoxObject<Socket>
 	{
-		static SOCKET Unbox(_In_ const Object& object);
-		static Object Box(_In_ const SOCKET& hello);
+		static Socket Unbox(_In_ const Object& object);
+		static Object Box(_In_ const Socket& sock);
+	};
+
+	
+	template<>
+	struct BoxObject<Utility>
+	{
+		static Utility Unbox(_In_ const Object& object);
+		static Object Box(_In_ const Utility& sock);
 	};
 
 };
