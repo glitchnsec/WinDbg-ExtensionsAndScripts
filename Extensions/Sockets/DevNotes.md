@@ -198,3 +198,94 @@
   - Need to preserver "Provider" for the actual implementation
 
   ### Hello World Notes
+
+
+- Fenruary 14th 2021
+  ---
+  ### Time Information
+  || Session 1| Session2 |
+  |:---|---:|----:|
+  | Start Time | 10:00 PM| |
+  | End Time| 2:00 PM| |
+  | Duration | 4.0 HR| |
+
+  ### Resources Discovered or Used Today:
+  ### Design Decisions
+
+  ### Notes
+  - skipped a lot of days without writing notes.. oh well
+  - So far the rpject builds and is able to be loaded into the debugger but on the string displayable seems to be working
+	```ini
+	0:005> dx -r1 Debugger.Utility
+	Debugger.Utility                
+		Collections     
+		Control         
+		Objects         
+		DbgDocumentation
+		Events          
+		FileSystem      
+		Code            
+		Analysis        
+		Sockets          : Gateway to Sockets 
+	```
+	```ini
+	0:005> dx -r1 Debugger.Utility.Sockets
+	Debugger.Utility.Sockets                 : Gateway to Sockets
+		Sockets   
+	```
+  - Fixed an issue where a misplaced line to initialize SocketUtility as a global pointer before the major classes were initialized caused GetManager to return nullptr
+  - An issue where boxing ptrs are not deleted causing dll not to unload
+  - An issue exists where Added Methods are not displayed
+  - Added Methods have not been debugged
+  - Built a simple windows console application to be able to debug the extension loading and unloading, basic code from msdn docs
+
+	```c++
+	// DllLoadTester.cpp : This file contains the 'main' function. Program execution begins and ends there.
+	//
+	#include <iostream>
+	  // A simple program that uses LoadLibrary and 
+	  // GetProcAddress to access myPuts from Myputs.dll. 
+
+	#include <windows.h> 
+	#include <stdio.h> 
+
+	typedef int(__cdecl *MYPROC)(LPWSTR);
+
+	int main()
+	{
+
+	  HINSTANCE hinstLib;
+	  MYPROC ProcAdd;
+	  BOOL fFreeResult, fRunTimeLinkSuccess = FALSE;
+
+	  // Get a handle to the DLL module.
+
+	  hinstLib = LoadLibrary(TEXT("WinDbg-ExtensionsAndScripts\\Extensions\\Sockets\\Debug\\Sockets.dll"));
+	  //hinstLib = LoadLibrary(TEXT("WinDbg-Samples\\DataModelHelloWorld\\Cpp\\Debug\\SimpleIntroClientLibrary.dll"));
+
+	  // If the handle is valid, try to get the function address.
+
+	  if (hinstLib != NULL)
+	  {
+    
+		// Free the DLL module.
+
+		fFreeResult = FreeLibrary(hinstLib);
+	  }
+
+	  return 0;
+
+	}
+
+	// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
+	// Debug program: F5 or Debug > Start Debugging menu
+
+	// Tips for Getting Started: 
+	//   1. Use the Solution Explorer window to add/manage files
+	//   2. Use the Team Explorer window to connect to source control
+	//   3. Use the Output window to see build output and other messages
+	//   4. Use the Error List window to view errors
+	//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
+	//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+
+	```

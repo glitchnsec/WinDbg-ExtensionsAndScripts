@@ -3,6 +3,7 @@
 namespace Debugger::DataModel::Libraries::Sockets {
 
 	SocketsProvider *SocketsProvider::s_pProvider = nullptr;
+	//SocketUtility *g_pSocketUtility = nullptr;
 
 
 	/**
@@ -24,15 +25,17 @@ namespace Debugger::DataModel::Libraries::Sockets {
 
 	SocketUtility::SocketUtility() {
 
-		//BindReadOnlyProperty(L"Sockets", &Details::Utility::Sockets);
+		BindReadOnlyProperty(L"Sockets", &Details::Utility::Sockets);
 
-		//AddMethod(L"SocketInit", this, &SocketUtility::SocketInit);
+		AddMethod(L"SocketInit", this, &SocketUtility::SocketInit);
 
-		//AddMethod(L"ServerEndpoint", this, &SocketUtility::ServerEndpoint);
+		AddMethod(L"ServerEndpoint", this, &SocketUtility::ServerEndpoint);
 
-		//AddMethod(L"ClientEndpoint", this, &SocketUtility::ClientEndpoint);
+		AddMethod(L"ClientEndpoint", this, &SocketUtility::ClientEndpoint);
 
 		AddStringDisplayableFunction(this, &SocketUtility::GetStringConversion);
+
+		//g_pSocketUtility = this;
 	}
 
 	// 
@@ -348,7 +351,7 @@ namespace Debugger::DataModel::ClientEx::Boxing
 	using namespace Debugger::DataModel::Libraries::Sockets;
 	using namespace Debugger::DataModel::Libraries::Sockets::Details;
 
-	SocketUtility *g_pSocketUtility = new SocketUtility;
+	
 
 
 	Socket BoxObject<Socket>::Unbox(_In_ const Object& object)
@@ -382,22 +385,25 @@ namespace Debugger::DataModel::ClientEx::Boxing
 		//
 		// convert.
 		//
-		if (g_pSocketUtility == nullptr || !g_pSocketUtility->IsObjectInstance(object))
+		SocketUtility *g_pSocketUtility = new SocketUtility;
+		if (!g_pSocketUtility->IsObjectInstance(object))
 		{
 			throw std::invalid_argument("Illegal object type.  Cannot convert to Utility");
 		}
 
-		return g_pSocketUtility->GetStoredInstance(object);
+		auto inst = g_pSocketUtility->GetStoredInstance(object);
+		//delete g_pSocketUtility;
+		return inst;
 	}
 
 
 	
 	Object BoxObject<Utility>::Box(_In_ const Utility& util)
 	{
-		if (g_pSocketUtility == nullptr) {
-			throw std::invalid_argument("Factory is NULL");
-		}
-		return g_pSocketUtility->CreateInstance(util);
+		SocketUtility *g_pSocketUtility = new SocketUtility;
+		auto inst = g_pSocketUtility->CreateInstance(util);
+		//delete g_pSocketUtility;
+		return inst;
 	}
 
 

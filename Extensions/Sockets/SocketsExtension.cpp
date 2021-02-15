@@ -76,6 +76,7 @@ HRESULT CALLBACK DebugExtensionInitialize(PULONG /*pVersion*/, PULONG /*pFlags*/
 
 	if (FAILED(hr))
 	{
+
 		if (g_pManager != nullptr)
 		{
 			g_pManager->Release();
