@@ -289,3 +289,19 @@
 	//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
 
 	```
+
+- Fenruary 23rd 2021
+  ---
+  ### Time Information
+  || Session 1| Session2 |
+  |:---|---:|----:|
+  | Start Time | 11:45 PM| |
+  | End Time| 2:30 AM| |
+  | Duration | 2.3/4 HR| |
+
+  ### Resources Discovered or Used Today:
+  ### Design Decisions
+  - Enforce WideChar Alternatives to socket APIs
+
+  ### Notes
+  - In addition to previous bugs, the extension does not get registered when compiled as 64bit

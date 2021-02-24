@@ -13,10 +13,10 @@ namespace Details {
 		bool isInitialized = false;
 		int err_code = -1;
 		std::wstring err_msg = L"Unitialized";
-		const std::wstring hostname;
+		std::wstring hostname;
 		int port = 0;
-		struct addrinfo *lresult;
-		struct addrinfo *rresult;
+		ADDRINFOW *lresult;
+		ADDRINFOW *rresult;
 		int endpoint_type = -1; // 0 | 1 for client and server respectively
 	};
 
@@ -63,7 +63,7 @@ public:
 	Object ServerEndpoint(
 		_In_ const Object& objectInstance,
 		_In_ Details::Utility& utilityObject,
-		std::string hostname,
+		const std::wstring hostname,
 		int port,
 		int family,
 		int type,
@@ -74,7 +74,7 @@ public:
 	Object ClientEndpoint(
 		_In_ const Object& objectInstance,
 		_In_ Details::Utility& utilityObject,
-		std::string hostname,
+		const std::wstring hostname,
 		int port,
 		int family,
 		int type,

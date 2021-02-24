@@ -70,9 +70,9 @@ namespace Debugger::DataModel::Libraries::Sockets {
 		// As seen at
 		// https://docs.microsoft.com/en-us/windows/win32/winsock/creating-a-socket-for-the-server
 
-		struct addrinfo *result = NULL,
-			*PTR = NULL,
-			hints;
+		ADDRINFOW *result = NULL;
+		ADDRINFOW *ptr = NULL;
+		ADDRINFOW hints;
 
 		ZeroMemory(&hints, sizeof(hints));
 		// TO DO Extend module to include constants such as these
@@ -110,7 +110,7 @@ namespace Debugger::DataModel::Libraries::Sockets {
 	Object SocketUtility::ClientEndpoint(
 		_In_ const Object& objectInstance,
 		_In_ Details::Utility& utilityObject,
-		std::string hostname,
+		const std::wstring hostname,
 		int port,
 		int family,
 		int type,
@@ -118,7 +118,7 @@ namespace Debugger::DataModel::Libraries::Sockets {
 	) 
 	{
 		int iResult;
-		struct addrinfo hints, *ptr;
+		ADDRINFOW hints, *ptr;
 		hints.ai_family = family;
 		hints.ai_socktype = type;
 		hints.ai_protocol = proto;
@@ -135,7 +135,7 @@ namespace Debugger::DataModel::Libraries::Sockets {
 		}
 
 		// GetAddrInfo of remote host
-		iResult = getaddrinfo(hostname.c_str(), std::to_string(port).c_str(), &hints, &socketObject->rresult);
+		iResult = GetAddrInfo(hostname.c_str(), std::to_wstring(port).c_str(), &hints, &socketObject->rresult);
 		if (iResult != 0) {
 			closesocket(socketObject->lsock);
 			WSACleanup();
@@ -143,7 +143,7 @@ namespace Debugger::DataModel::Libraries::Sockets {
 			socketObject->rresult = NULL;
 			socketObject->isInitialized = false;
 			socketObject->err_code = WSAGetLastError();
-			socketObject->err_msg = L"getaddrinfo failed";
+			socketObject->err_msg = L"getAddrInfo failed";
 			return Object::Create(HostContext(), L"Socket", *socketObject);
 		}
 
@@ -164,7 +164,7 @@ namespace Debugger::DataModel::Libraries::Sockets {
 
 		if (!iResult) {
 
-			freeaddrinfo(socketObject->rresult);
+			FreeAddrInfo(socketObject->rresult);
 			WSACleanup();
 			closesocket(socketObject->lsock);
 			socketObject->lsock = INVALID_SOCKET;
@@ -200,14 +200,14 @@ namespace Debugger::DataModel::Libraries::Sockets {
 	Object SocketUtility::ServerEndpoint(
 		_In_ const Object& objectInstance,
 		_In_ Details::Utility& utilityObject,
-		std::string hostname,
+		const std::wstring hostname,
 		int port,
 		int family,
 		int type,
 		int proto)
 	{
 		int iResult;
-		struct addrinfo hints;
+		ADDRINFOW hints;
 		hints.ai_family = family;
 		hints.ai_socktype = type;
 		hints.ai_protocol = proto;
@@ -225,21 +225,21 @@ namespace Debugger::DataModel::Libraries::Sockets {
 
 		// BIND to an address
 		// Resolve the local address and port to be used by the server
-		iResult = getaddrinfo(hostname.c_str(), std::to_string(port).c_str(), &hints, &socketObject->lresult);
+		iResult = GetAddrInfo(hostname.c_str(), std::to_wstring(port).c_str(), &hints, &socketObject->lresult);
 		if (iResult != 0) {
 			closesocket(socketObject->lsock);
-			printf("getaddrinfo failed: %d\n", iResult);
+			printf("getAddrInfo failed: %d\n", iResult);
 			WSACleanup();
 			socketObject->lsock = INVALID_SOCKET;
 			socketObject->lresult = NULL;
 			socketObject->isInitialized = false;
 			socketObject->err_code = WSAGetLastError();
-			socketObject->err_msg = L"getaddrinfo failed";
+			socketObject->err_msg = L"getAddrInfo failed";
 			return Object::Create(HostContext(), L"Socket", *socketObject);
 		}
 
 		iResult = bind(socketObject->lsock, socketObject->lresult->ai_addr, (int)socketObject->lresult->ai_addrlen);
-		freeaddrinfo(socketObject->lresult);
+		FreeAddrInfo(socketObject->lresult);
 		socketObject->lresult = NULL;
 		if (iResult == SOCKET_ERROR) {
 			closesocket(socketObject->lsock);
@@ -252,6 +252,10 @@ namespace Debugger::DataModel::Libraries::Sockets {
 			socketObject->err_msg = L"bind failed";
 			return Object::Create(HostContext(), L"Socket", *socketObject);
 		}
+
+		// update object
+		socketObject->hostname = hostname;
+		socketObject->port = port;
 
 		// LISTEN
 		if (listen(socketObject->lsock, SOMAXCONN) == SOCKET_ERROR) {
@@ -294,24 +298,22 @@ namespace Debugger::DataModel::Libraries::Sockets {
 				// client
 				stringConversion = L"ClientSocket: Socket is ";
 				stringConversion += L"Connected to : (";
-				stringConversion += sock.hostname;
-				stringConversion += L",";
-				stringConversion += std::to_wstring(sock.port);
-				stringConversion += L")\n";
 
 			}
 			else if (sock.endpoint_type == 0) {
 				// server
 				stringConversion = L"ServerSocket: Socket is ";
 				stringConversion += L"Listening at : (";
-				stringConversion += sock.hostname;
-				stringConversion += L",";
-				stringConversion += std::to_wstring(sock.port);
-				stringConversion += L")\n";
 			}
 			else {
 				// haven't seen this before 
 			}
+			stringConversion += sock.hostname;
+			stringConversion += L",";
+			stringConversion += std::to_wstring(sock.port);
+			stringConversion += L")\n";
+			stringConversion += sock.err_msg;
+			stringConversion += L"\n";
 		}
 		else {
 			stringConversion += L"Not Listening. Error msg is: ";
