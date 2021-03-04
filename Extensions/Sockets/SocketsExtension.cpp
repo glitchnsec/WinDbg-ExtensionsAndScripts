@@ -36,9 +36,12 @@ namespace Debugger::DataModel::Libraries
 // of any of the extension classes which provide the functionality of the debugger extension.
 //
 extern "C"
-HRESULT CALLBACK DebugExtensionInitialize(PULONG /*pVersion*/, PULONG /*pFlags*/)
+HRESULT CALLBACK DebugExtensionInitialize
+(PULONG pVersion/*pVersion*/, PULONG pFlags /*pFlags*/)
 {
 	HRESULT hr = S_OK;
+	*pVersion = DEBUG_EXTENSION_VERSION(1, 0);
+	*pFlags = 0;
 
 	try
 	{
@@ -156,3 +159,35 @@ void CALLBACK DebugExtensionUnload()
 {
 }
 
+extern "C"
+HRESULT
+CALLBACK
+mycommand(PDEBUG_CLIENT4 Client, PCSTR Args) {
+	PDEBUG_CONTROL debugControl;
+	HRESULT hr;
+	DEBUG_VALUE result;
+
+	UNREFERENCED_PARAMETER(Args);
+	hr = Client->QueryInterface(__uuidof(IDebugControl),
+		(void**)&debugControl);
+
+	if (hr != S_OK) {
+		return hr;
+	}
+
+	debugControl->Output(DEBUG_OUTCTL_ALL_CLIENTS,
+		"myCommand running ...\n");
+
+	hr = debugControl->Evaluate("2+2", DEBUG_VALUE_INT32, &result, NULL);
+
+	if (hr != S_OK) {
+		debugControl->Release();
+		return hr;
+	}
+
+	debugControl->Output(DEBUG_OUTCTL_ALL_CLIENTS, "Result is %d\n", result.I32);
+
+	debugControl->Release();
+
+	return S_OK;
+}

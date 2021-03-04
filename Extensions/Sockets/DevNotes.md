@@ -200,7 +200,7 @@
   ### Hello World Notes
 
 
-- Fenruary 14th 2021
+- February 14th 2021
   ---
   ### Time Information
   || Session 1| Session2 |
@@ -290,7 +290,7 @@
 
 	```
 
-- Fenruary 23rd 2021
+- February 23rd 2021
   ---
   ### Time Information
   || Session 1| Session2 |
@@ -305,3 +305,23 @@
 
   ### Notes
   - In addition to previous bugs, the extension does not get registered when compiled as 64bit
+
+- March 3rd 2021
+  ---
+  ### Time Information
+  || Session 1| Session2 |
+  |:---|---:|----:|
+  | Start Time | 11:15 PM| |
+  | End Time| 1:30 AM| |
+  | Duration | 2.1/4 HR| |
+
+  ### Resources Discovered or Used Today:
+  - NT Insider from 2010 http://index-of.es/Windows/JulAug2010.pdf also discovered OCR and other NT Insider docs.
+
+  ### Design Decisions
+  - n/a
+
+  ### Notes
+  - Focused on fixing the issue with the x64 build not actually extending the debugger. Turned out it was because the linker was not linking the module definition file `SocketsExtension.def`. I came to this understanding after reading the NT Insider build which explained that commands exported from an extension have to be defined in the .DEF file. After following the included example, my command wasn't available in the x64 dll but in the 32 build. So I sort to understand how the .DEF is invluded in the build and did the same for th ex64 build and the issue was fixed.
+
+  - Other bugs still exist, but this is one step in the right direction and lots of cool stuff to learn
